@@ -1,0 +1,135 @@
+---
+title: "ml hackathon"
+author: "bhavana bharti"
+date: "10 November 2017"
+output: html_document
+---
+
+```{r}
+library(dplyr)
+library(knitr)
+library(ggplot2)
+library(corrplot)
+library(tree)
+library(e1071)
+library(class)
+a=read.csv("D:/machinelearning/Model_Data.csv")
+#View(a)
+summary(a)
+str(a)
+boxplot(a)
+colnames(a)
+a$salary=gsub("\\.", "", a$salary)
+a$salary=as.factor(a$salary)
+```
+corelation
+```{r}
+for(i in 1:ncol(a)){
+  if(is.factor(a[,i])){
+    a[,i]=as.numeric(a[,i])
+  }
+}
+#View(a)
+cor_relation=cor(select(a,c(colnames(a))))
+corrplot(cor_relation)
+
+```
+data imputation
+```{r}
+a=read.csv("D:/machinelearning/Model_Data.csv")
+a$salary=gsub("\\.", "", a$salary)
+a$salary=as.factor(a$salary)
+Mode <- function(v) {
+ uniqv <- unique(v)
+ uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+if(is.numeric(a[i])){
+for(i in 1:ncol(a)){
+  for(j in 1:nrow(a)){
+    if(a[j,i]=='?'){
+      a[j,i]=mean(a[,i])
+    }
+
+}
+}
+}
+
+if(is.factor(a[,i])){
+for(i in 1:ncol(a)){
+  for(j in 1:nrow(a)){
+    if(a[j,i]==' ?'){
+      a[j,i]=Mode(a[,i])
+    }
+
+}
+}
+}
+
+
+```
+dividing the data
+```{r}
+set.seed(0037)
+sample=sample.int(n=nrow(a),size = floor(.8*nrow(a)),replace=F)
+a.train=a[sample,]
+a_test=a[-sample,]
+colnames(a)
+```
+model1=decision tree
+a.model=tree(salary~age+workclass+education+education_num+marital_status+occupation+relationship+race+sex+capital_gain+capital_loss+hours_per_week ,data=a)
+accuracy=75.11719
+```{r}
+a.model=tree(salary~age+workclass+education+education_num+marital_status+occupation+relationship+race+sex+capital_gain+capital_loss+hours_per_week ,data=a)
+a.train.model=tree(salary~age+workclass+education+education_num+marital_status+occupation+relationship+race+sex+capital_gain+capital_loss+hours_per_week ,a.train)
+model_prediction=predict(a.model,a_test)
+summary(model_prediction)
+
+maxidx=function(arr){
+  return(which(arr==max(arr)))
+}
+idx=apply(as.matrix(model_prediction)[,1,drop=F],c(1),maxidx)
+modelprediction=c('1','2')[idx]
+confmat=table(modelprediction,a_test$salary)
+confmat
+accuracy=sum(diag(confmat))/sum(confmat)*100
+accuracy
+```
+model2=knn
+data_pred_label=knn(train = data_train_data,test = data_test_data,cl=data_train_label,k)
+accuracy=75.11719
+```{R}
+a=read.csv("D:/machinelearning/Model_Data.csv")
+a$salary=gsub("\\.", "", a$salary)
+a$salary=as.factor(a$salary)
+set.seed(0037)
+sample=sample.int(n=nrow(a),size = floor(.8*nrow(a)),replace=F)
+for(i in 1:ncol(a)){
+  if(is.factor(a[,i])){
+    a[,i]=as.numeric(a[,i])
+  }
+}
+
+k=4
+data_train_data=a[sample,1:14]
+data_test_data=a[-sample,1:14]
+data_train_label=a[sample,15]
+data_test_label=a[-sample,15]
+
+data_pred_label=knn(train = data_train_data,test = data_test_data,cl=data_train_label,k)
+
+confmat=table(data_pred_label,data_test_label)
+
+accuracy=(sum(diag(confmat))/sum(confmat))*100
+accuracy
+```
+model3=NAIVE BAYES
+model=naiveBayes(salary~.,data=a.train)
+accuracy=82.38281
+```{R}
+model=naiveBayes(salary~.,data=a.train)
+pred=predict(model,a_test[,-15])
+confmat=table(pred,a_test$salary)
+accuracy=sum(diag(confmat))/sum(confmat)*100
+accuracy
+```
+the models are generalised since it has accuracy between 70%-90% and hence these models are not underfitted or overfitted.
