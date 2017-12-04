@@ -1,0 +1,69 @@
+---
+title: "tweet analysis"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library("RColorBrewer")
+library("tm")
+library("wordcloud")
+t=read.csv("D:/data visualisation/Datasets/narendramodi_tweets.csv")
+```
+ROWS
+-------------
+###Followers
+```{r}
+valueBox(10000,icon = "fa-twitter",color = "green")
+
+```
+
+###Total Tweets
+```{r}
+valueBox(5000,icon = "fa-pencil",color = "red")
+```
+
+###Average Retweets
+```{r}
+valueBox(10000,icon = "fa-retweet",color = "yellow")
+#colnames(t)
+```
+
+rows
+-------------
+###Retweets vs likes
+```{r}
+g=ggplot(t,aes(retweets_count,favorite_count,color=source))+geom_point()
+ggplotly(g)
+```
+
+
+rows
+-------------
+###word cloud on top frequent words
+```{r}
+t$text=as.character(t$text)
+words_freq=table(unlist(strsplit(t$text,' ')))
+words_freq=as.data.frame(words_freq)
+names(words_freq)=c('words','freq')
+
+#head(words_freq)
+words_top=words_freq%>%arrange(-freq)%>%head(50)
+wordcloud(words_top$words,words_top$freq,colors=words_top$freq)
+```
+
+###word cloud on top hashtag words
+```{r}
+hashtag_words=words_freq[startsWith(as.character(words_freq$words),'#'),]
+hashtag_words_top=hashtag_words %>% arrange(-freq) %>% head(50)
+wordcloud(hashtag_words_top$words,hashtag_words_top$freq,colors = hashtag_words_top$freq)
+```
+
+
+
