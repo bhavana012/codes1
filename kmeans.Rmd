@@ -1,0 +1,26 @@
+---
+title: "Kmeans"
+author: "Padmni Bharadwaj"
+date: "14 November 2017"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+tt <- read.csv("D:/Academics/Datasets/IRIS_v2.csv")
+```
+
+```{R}
+set.seed(10)
+ggplot(tt,aes(petalLength,petalWidth)) + geom_point()
+```
+
+```{r}
+irisCluster = kmeans(tt[,3:4],5,nstart = 20) #Nstart  is the starting position
+iris_clustered  = data.frame(tt[,3:4],irisCluster$cluster)
+ggplot(iris_clustered,aes(petalLength,petalWidth,color =-irisCluster$cluster) ) + geom_point()
+
+irisCluster = kmeans(tt[,1:4],5,nstart = 20) #Nstart  is the starting position
+iris_clustered  = data.frame(tt[,1:4],irisCluster$cluster)
+plot(iris_clustered[,1:4],col=as.factor(irisCluster$cluster))
+```

@@ -1,0 +1,49 @@
+---
+title: "recommender system"
+author: "bhavana bharti"
+date: "20 November 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+movie_data=read.csv("D:/machine learning/data/train_v2.csv")
+View(movie_data)
+movie_data$ID<-NULL
+```
+conversion into matrix
+```{r}
+library("reshape2")
+ratingmatrix=acast(movie_data,user~movie)
+View(ratingmatrix)
+```
+adavantage of sparse matrix is that you don't have to store the entire matrix just the values with their locations can be stored i.e. memory requirement will go down but the information is not lost
+```{r}
+library("recommenderlab")
+library("arules")
+ratingmatrix=as.matrix(ratingmatrix)
+#convert r into realratingmatrix data structure
+#realratingmatrix is a recommenderlab sparse-matrix like data structure
+ratingmatrix=as(ratingmatrix,"realRatingMatrix")
+ratingmatrix
+#VIEW IN OTHER POSSIBLE WAYS
+as(ratingmatrix,"list") # a list
+View(as(ratingmatrix,"matrix")) # a sparse matrix
+
+```
+building the recommendation model
+method UBCF is user based collaborative filtering
+```{r}
+data(MovieLense)
+MovieLense
+sample_movielense=sample.int(nrow(MovieLense),0.999*(nrow(MovieLense)))
+train_movielense=MovieLense[sample_movielense]
+test_movielense=MovieLense[-sample_movielense]
+
+recom_model_ML=Recommender(train_movielense,method="UBCF")
+
+predict_ML=predict(recom_model_ML,test_movielense,n=3)
+
+as(predict_ML,"list")
+as(test_movielense,"list")
+```

@@ -1,0 +1,54 @@
+---
+title: "customer analytics"
+author: "bhavana bharti"
+date: "21 November 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+data=read.csv("D:/machine learning/data/wcd.csv")
+```
+
+```{r}
+str(data)
+summary(data)
+```
+
+```{r}
+k=1
+total=c()
+for(i in 1:439){
+  cluster1 <- kmeans(data[,1:8],i,nstart = 20)
+
+total[i]=cluster1$tot.withinss
+
+
+  k=k+1
+  
+}
+plot(1:439,total)
+colnames(data)
+```
+
+```{r}
+cluster1=kmeans(data,3,nstart=20)
+cluster1_data=data.frame(data,cluster1$cluster)
+
+ggplot(cluster1_data,aes(x=Grocery,y=Milk,color=cluster1_data$cluster1.cluster))+geom_line()
+ggplot(cluster1_data,aes(x=Fresh,y=Milk))+geom_line()
+plot(cluster1_data,col=as.factor(cluster1_data$cluster1.cluster))
+ggplot(cluster1_data,aes(x=Grocery,y=Detergents_Paper,color=cluster1_data$cluster1.cluster))+geom_line()
+
+```
+
+```{r}
+correlation <- select(data,c("Fresh","Milk","Grocery","Frozen","Detergents_Paper","Delicassen"))
+
+corr_values <- (cor(correlation))
+
+corrplot(corr_values,method = "square")
+
+ggplot(correlation,aes(x=Fresh,y=Milk))+geom_point()+geom_smooth()
+```
+

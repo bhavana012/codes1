@@ -1,0 +1,68 @@
+---
+title: "KNN"
+author: "Manish"
+date: "10 November 2017"
+output: html_document
+---
+
+```{r}
+
+model_KNN <- read.csv(file="Model_Data.csv",header=TRUE)
+
+
+model_KNN$Compensational_level1 <- gsub("\\.","",model_NB$Compensational_level)
+
+model_KNN$Compensational_level1 <- as.factor(model_KNN$Compensational_level1)
+
+model_KNN$native.country <- as.factor(model_KNN$native.country)
+
+model_KNN$native.country <- as.integer(model_KNN$native.country)
+
+model_KNN <- model_KNN[,-15]
+
+model_KNN
+
+str(model_KNN)
+
+model_KNN$workclass <- as.integer(model_KNN$workclass)
+
+model_KNN$education <- as.integer(model_KNN$education)
+
+model_KNN$marital_status <- as.integer(model_KNN$marital_status)
+
+model_KNN$occupation <- as.integer(model_KNN$occupation )
+
+model_KNN$relationship <-  as.integer(model_KNN$relationship)
+
+model_KNN$race <- as.integer(model_KNN$race)
+
+model_KNN$sex <- as.integer(model_KNN$sex)
+
+
+set.seed(28)
+
+randon_sample_KNN <- sample.int(n=nrow(sample_KNN),size=floor(0.8*nrow(sample_KNN)),replace=F)
+  
+model_KNN_train <- model_KNN[randon_sample_KNN,(1:14)]
+
+model_KNN_test<-model_KNN[-randon_sample_KNN,(1:14)]
+
+model_KNN_train_label<-model_KNN[randon_sample_KNN,15]
+
+model_KNN_test_label<-model_KNN[-randon_sample_KNN,15]
+
+
+k=6
+
+
+KNN_pred_label <- knn(train=model_KNN_train,test=model_KNN_test,cl=model_KNN_train_label,k)
+
+confmatrix_KNN=table(model_KNN_test_label,KNN_pred_label)
+
+accuracy_KNN<-sum(diag(confmatrix_KNN)/sum(confmatrix_KNN))  
+
+accuracy_KNN
+
+
+```
+
